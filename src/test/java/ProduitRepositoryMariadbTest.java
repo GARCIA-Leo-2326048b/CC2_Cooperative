@@ -45,14 +45,6 @@ class ProduitRepositoryMariadbTest {
         repository.close();
     }
 
-    @AfterAll
-    static void tearDownAll() throws Exception {
-        try (Statement stmt = testConnection.createStatement()) {
-            stmt.execute("DROP TABLE Produit");
-        }
-        testConnection.close();
-    }
-
     @Test
     @DisplayName("Test createProduit - Création réussie")
     void testCreateProduit_Success() {
