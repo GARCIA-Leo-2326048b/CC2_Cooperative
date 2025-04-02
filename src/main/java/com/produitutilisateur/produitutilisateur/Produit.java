@@ -136,6 +136,9 @@ public class Produit {
      * @param quantite un double avec la nouvelle quantité
      */
     public void setQuantite(double quantite) {
+        if (quantite < 0) {
+            throw new IllegalArgumentException("La quantité ne peut pas être négative");
+        }
         this.quantite = quantite;
     }
 
@@ -152,6 +155,9 @@ public class Produit {
      * @param prix un double avec le nouveau prix
      */
     public void setPrix(double prix) {
+        if (prix <= 0) {
+            throw new IllegalArgumentException("Le prix doit être positif");
+        }
         this.prix = prix;
     }
 
