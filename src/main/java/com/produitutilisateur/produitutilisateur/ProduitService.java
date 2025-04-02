@@ -9,55 +9,54 @@ import java.util.ArrayList;
  */
 public class ProduitService {
 
-    /**
-     * Répository pour l'accès aux données des produits
-     */
     protected ProduitRepositoryInterface produitRepo;
 
-    /**
-     * Constructeur avec injection de dépendance
-     * @param produitRepo le repository à utiliser
-     */
     public ProduitService(ProduitRepositoryInterface produitRepo) {
         this.produitRepo = produitRepo;
     }
 
-    /**
-     * Récupère tous les produits au format JSON
-     * @return String contenant le JSON des produits
-     */
     public String getAllProduitsJSON() {
         ArrayList<Produit> allProduits = produitRepo.getAllProduits();
         return convertToJson(allProduits);
     }
 
-    /**
-     * Récupère les produits d'une catégorie spécifique au format JSON
-     * @param categorie la catégorie recherchée
-     * @return String contenant le JSON des produits
-     */
     public String getProduitsByCategorieJSON(String categorie) {
         ArrayList<Produit> produits = produitRepo.getProduitsByCategorie(categorie);
         return convertToJson(produits);
     }
 
-    /**
-     * Récupère un produit spécifique au format JSON
-     * @param id l'identifiant du produit
-     * @return String contenant le JSON du produit ou null si non trouvé
-     */
     public String getProduitJSON(int id) {
         Produit produit = produitRepo.getProduit(id);
         return produit != null ? convertToJson(produit) : null;
     }
 
     /**
-     * Met à jour un produit existant
-     * @param id l'identifiant du produit
-     * @param produit le produit avec les nouvelles données
-     * @return boolean indiquant si la mise à jour a réussi
+     * Crée un nouveau produit
+     * @param produit le produit à créer (sans ID)
+     * @return le produit créé avec son nouvel ID, ou null si échec
      */
+    public Produit createProduit(Produit produit) {
+        // Validation des données
+        if (produit == null ||
+                produit.getNom() == null || produit.getNom().isBlank() ||
+                produit.getCategorie() == null || produit.getCategorie().isBlank() ||
+                produit.getQuantite() < 0 ||
+                produit.getUnite() == null || produit.getUnite().isBlank() ||
+                produit.getPrix() <= 0) {
+            return null;
+        }
+
+        // Création dans le repository
+        boolean success = produitRepo.createProduit(produit);
+        return success ? produit : null;
+    }
+
     public boolean updateProduit(int id, Produit produit) {
+        // Validation que l'ID correspond
+        if (produit.getId() != 0 && produit.getId() != id) {
+            return false;
+        }
+
         return produitRepo.updateProduit(
                 id,
                 produit.getNom(),
@@ -68,21 +67,22 @@ public class ProduitService {
         );
     }
 
-    /**
-     * Met à jour la quantité disponible d'un produit
-     * @param id l'identifiant du produit
-     * @param nouvelleQuantite la nouvelle quantité
-     * @return boolean indiquant si la mise à jour a réussi
-     */
     public boolean updateQuantite(int id, double nouvelleQuantite) {
+        if (nouvelleQuantite < 0) {
+            return false;
+        }
         return produitRepo.updateQuantite(id, nouvelleQuantite);
     }
 
     /**
-     * Méthode utilitaire pour la conversion en JSON
-     * @param object l'objet à convertir
-     * @return String le JSON résultant
+     * Supprime un produit
+     * @param id l'identifiant du produit à supprimer
+     * @return true si suppression réussie, false sinon
      */
+    public boolean deleteProduit(int id) {
+        return produitRepo.deleteProduit(id);
+    }
+
     private String convertToJson(Object object) {
         try (Jsonb jsonb = JsonbBuilder.create()) {
             return jsonb.toJson(object);
@@ -90,5 +90,17 @@ public class ProduitService {
             System.err.println("Erreur de conversion JSON : " + e.getMessage());
             return null;
         }
+    }
+
+    /**
+     * Génère un nouvel ID pour un produit
+     * @return le prochain ID disponible
+     */
+    public int generateNewId() {
+        ArrayList<Produit> produits = produitRepo.getAllProduits();
+        return produits.stream()
+                .mapToInt(Produit::getId)
+                .max()
+                .orElse(0) + 1;
     }
 }

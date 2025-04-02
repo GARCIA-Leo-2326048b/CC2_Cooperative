@@ -146,4 +146,62 @@ public class ProduitRepositoryMariadb implements ProduitRepositoryInterface, Clo
 
         return (nbRowModified != 0);
     }
+
+    @Override
+    public boolean createProduit(Produit produit) {
+        if (produit == null || produit.getNom() == null || produit.getNom().isEmpty()) {
+            return false;
+        }
+
+        String query = "INSERT INTO Produit(nom, categorie, quantite, unite, prix) VALUES(?, ?, ?, ?, ?)";
+
+        try (PreparedStatement ps = dbConnection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, produit.getNom());
+            ps.setString(2, produit.getCategorie());
+            ps.setDouble(3, produit.getQuantite());
+            ps.setString(4, produit.getUnite());
+            ps.setDouble(5, produit.getPrix());
+
+            int affectedRows = ps.executeUpdate();
+
+            if (affectedRows == 0) {
+                return false;
+            }
+
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    produit.setId(generatedKeys.getInt(1));
+                }
+            }
+            return true;
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la création du produit: " + e.getMessage());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean deleteProduit(int id) {
+        String query = "DELETE FROM Produit WHERE id = ?";
+
+        try (PreparedStatement ps = dbConnection.prepareStatement(query)) {
+            ps.setInt(1, id);
+            int affectedRows = ps.executeUpdate();
+            return affectedRows > 0;
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la suppression du produit: " + e.getMessage());
+            return false;
+        }
+    }
+
+    public int countProduitsWithId(int id) throws SQLException {
+        String query = "SELECT COUNT(*) FROM Produit WHERE id = ?";
+        try (PreparedStatement ps = dbConnection.prepareStatement(query)) {
+            ps.setInt(1, id);
+            try (ResultSet rs = ps.executeQuery()) {
+                rs.next();
+                return rs.getInt(1);
+            }
+        }
+    }
 }

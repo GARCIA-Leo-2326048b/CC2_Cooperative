@@ -62,6 +62,30 @@ public class ProduitResource {
         return Response.ok(produitsJson).build();
     }
 
+    @POST
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response createProduit(Produit produit) {
+        try {
+            // Création du produit via le service
+            Produit createdProduit = service.createProduit(produit);
+
+            if (createdProduit != null) {
+                return Response.status(Response.Status.CREATED)
+                        .entity(createdProduit)
+                        .build();
+            } else {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("{\"error\":\"Impossible de créer le produit\"}")
+                        .build();
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"error\":\"Erreur serveur lors de la création: " + e.getMessage() + "\"}")
+                    .build();
+        }
+    }
+
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -89,6 +113,27 @@ public class ProduitResource {
         } catch (NumberFormatException e) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("{\"error\":\"La quantité doit être un nombre\"}")
+                    .build();
+        }
+    }
+
+    @DELETE
+    @Path("/{id}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response deleteProduit(@PathParam("id") int id) {
+        try {
+            if (service.deleteProduit(id)) {
+                return Response.ok()
+                        .entity("{\"message\":\"Produit supprimé avec succès\"}")
+                        .build();
+            } else {
+                return Response.status(Response.Status.NOT_FOUND)
+                        .entity("{\"error\":\"Produit non trouvé ou déjà supprimé\"}")
+                        .build();
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("{\"error\":\"Erreur lors de la suppression: " + e.getMessage() + "\"}")
                     .build();
         }
     }

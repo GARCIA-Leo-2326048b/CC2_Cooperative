@@ -33,6 +33,13 @@ public interface ProduitRepositoryInterface {
     public ArrayList<Produit> getProduitsByCategorie(String categorie);
 
     /**
+     * Méthode permettant de créer un nouveau produit
+     * @param produit le produit à créer
+     * @return true si la création a réussi, false sinon
+     */
+    public boolean createProduit(Produit produit);
+
+    /**
      * Méthode permettant de mettre à jour un produit enregistré
      * @param id identifiant du produit à mettre à jour
      * @param nom nouveau nom du produit
@@ -51,4 +58,11 @@ public interface ProduitRepositoryInterface {
      * @return true si la mise à jour a réussi, false sinon
      */
     public boolean updateQuantite(int id, double nouvelleQuantite);
+
+    /**
+     * Méthode permettant de supprimer un produit
+     * @param id identifiant du produit à supprimer
+     * @return true si la suppression a réussi, false sinon
+     */
+    public boolean deleteProduit(int id);
 }
