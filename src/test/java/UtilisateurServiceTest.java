@@ -68,33 +68,12 @@ class UtilisateurServiceTest {
         }
 
         @Override
-        public boolean updateMotDePasse(String id, String nouveauMdp) {
-            Utilisateur u = getUtilisateur(id);
-            if (u != null) {
-                u.setMdp(nouveauMdp);
-                return true;
-            }
-            return false;
-        }
-
-        @Override
         public boolean deleteUtilisateur(String id) {
             Utilisateur utilisateurASupprimer = getUtilisateur(id);
             if (utilisateurASupprimer != null) {
                 return utilisateurs.remove(utilisateurASupprimer);
             }
             return false;
-        }
-
-        @Override
-        public boolean authenticate(String mail, String mdp) {
-            Utilisateur u = getUtilisateurByMail(mail);
-            return u != null && u.getMdp().equals(mdp);
-        }
-
-        @Override
-        public int countUtilisateursWithId(String id) {
-            return (int) utilisateurs.stream().filter(u -> u.getId().equals(id)).count();
         }
     }
 
@@ -141,37 +120,6 @@ class UtilisateurServiceTest {
         // Tentative de mise à jour avec un ID qui ne correspond pas
         boolean success = utilisateurService.updateUtilisateur("user-1", updated);
         assertFalse(success);
-    }
-
-    @Test
-    void testUpdateMotDePasse() {
-        boolean success = utilisateurService.updateMotDePasse("user-1", "newpassword");
-        assertTrue(success);
-        assertTrue(testRepository.authenticate("jean.dupont@example.com", "newpassword"));
-    }
-
-    @Test
-    void testUpdateMotDePasse_InvalidPassword() {
-        boolean success = utilisateurService.updateMotDePasse("user-1", "");
-        assertFalse(success);
-    }
-
-    @Test
-    void testAuthenticate_Success() {
-        assertTrue(utilisateurService.authenticate("jean.dupont@example.com", "mdp123"));
-    }
-
-    @Test
-    void testAuthenticate_Failure() {
-        // Mauvais mot de passe
-        assertFalse(utilisateurService.authenticate("jean.dupont@example.com", "wrongpassword"));
-
-        // Utilisateur inexistant
-        assertFalse(utilisateurService.authenticate("nonexistent@example.com", "mdp123"));
-
-        // Données vides
-        assertFalse(utilisateurService.authenticate("", ""));
-        assertFalse(utilisateurService.authenticate(null, null));
     }
 
     @Test

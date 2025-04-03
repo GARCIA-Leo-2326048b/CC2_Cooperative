@@ -51,33 +51,11 @@ public interface UtilisateurRepositoryInterface {
     public boolean updateUtilisateur(String id, String nom, String mdp, String mail);
 
     /**
-     * Méthode permettant de mettre à jour le mot de passe d'un utilisateur
-     * @param id identifiant de l'utilisateur (String)
-     * @param nouveauMdp nouveau mot de passe haché
-     * @return true si la mise à jour a réussi, false sinon
-     */
-    public boolean updateMotDePasse(String id, String nouveauMdp);
-
-    /**
      * Méthode permettant de supprimer un utilisateur
      * @param id identifiant de l'utilisateur à supprimer (String)
      * @return true si la suppression a réussi, false sinon
      */
     public boolean deleteUtilisateur(String id);
 
-    /**
-     * Méthode permettant de vérifier les credentials d'un utilisateur
-     * @param mail email de l'utilisateur
-     * @param mdp mot de passe haché
-     * @return true si les credentials sont valides, false sinon
-     */
-    public boolean authenticate(String mail, String mdp);
 
-    /**
-     * Méthode permettant de compter le nombre d'utilisateurs avec un identifiant donné
-     * @param id identifiant à rechercher (String)
-     * @return nombre d'utilisateurs avec cet identifiant
-     * @throws SQLException en cas d'erreur SQL
-     */
-    public int countUtilisateursWithId(String id) throws SQLException;
 }

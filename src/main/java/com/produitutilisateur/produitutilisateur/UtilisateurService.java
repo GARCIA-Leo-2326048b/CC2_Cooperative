@@ -103,26 +103,6 @@ public class UtilisateurService {
         );
     }
 
-    public boolean updateMotDePasse(String id, String nouveauMdp) {
-        if (nouveauMdp == null || nouveauMdp.isBlank()) {
-            return false;
-        }
-        return utilisateurRepo.updateMotDePasse(id, nouveauMdp);
-    }
-
-    /**
-     * Authentifie un utilisateur
-     * @param mail l'email de l'utilisateur
-     * @param mdp le mot de passe
-     * @return true si authentification réussie, false sinon
-     */
-    public boolean authenticate(String mail, String mdp) {
-        if (mail == null || mail.isBlank() || mdp == null || mdp.isBlank()) {
-            return false;
-        }
-        return utilisateurRepo.authenticate(mail, mdp);
-    }
-
     /**
      * Supprime un utilisateur
      * @param id l'identifiant de l'utilisateur à supprimer

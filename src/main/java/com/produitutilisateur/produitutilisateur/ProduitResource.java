@@ -5,8 +5,11 @@ import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import java.util.ArrayList;
 
+/**
+ * Ressource RESTful pour la gestion des produits.
+ * Fournit des opérations CRUD pour manipuler les produits.
+ */
 @Path("/produits")
 @ApplicationScoped
 public class ProduitResource {
@@ -14,19 +17,25 @@ public class ProduitResource {
     private ProduitService service;
 
     /**
-     * Constructeur par défaut requis par JAX-RS
+     * Constructeur par défaut requis par JAX-RS.
      */
     public ProduitResource() {}
 
     /**
-     * Constructeur avec injection de dépendances
-     * @param produitRepo le repository injecté
+     * Constructeur avec injection de dépendances.
+     *
+     * @param produitRepo le repository injecté pour gérer les produits.
      */
     @Inject
     public ProduitResource(ProduitRepositoryInterface produitRepo) {
         this.service = new ProduitService(produitRepo);
     }
 
+    /**
+     * Récupère tous les produits.
+     *
+     * @return une réponse contenant la liste des produits au format JSON.
+     */
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Response getAllProduits() {
@@ -40,6 +49,12 @@ public class ProduitResource {
         }
     }
 
+    /**
+     * Récupère un produit par son ID.
+     *
+     * @param id l'identifiant du produit.
+     * @return une réponse contenant le produit au format JSON.
+     */
     @GET
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -54,6 +69,12 @@ public class ProduitResource {
         }
     }
 
+    /**
+     * Récupère les produits d'une catégorie spécifique.
+     *
+     * @param categorie la catégorie des produits à rechercher.
+     * @return une réponse contenant les produits filtrés par catégorie au format JSON.
+     */
     @GET
     @Path("/categorie/{categorie}")
     @Produces(MediaType.APPLICATION_JSON)
@@ -62,14 +83,18 @@ public class ProduitResource {
         return Response.ok(produitsJson).build();
     }
 
+    /**
+     * Crée un nouveau produit.
+     *
+     * @param produit l'objet Produit à créer.
+     * @return une réponse indiquant le succès ou l'échec de la création.
+     */
     @POST
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
     public Response createProduit(Produit produit) {
         try {
-            // Création du produit via le service
             Produit createdProduit = service.createProduit(produit);
-
             if (createdProduit != null) {
                 return Response.status(Response.Status.CREATED)
                         .entity(createdProduit)
@@ -86,6 +111,13 @@ public class ProduitResource {
         }
     }
 
+    /**
+     * Met à jour un produit existant.
+     *
+     * @param id l'identifiant du produit à mettre à jour.
+     * @param produit l'objet Produit avec les nouvelles valeurs.
+     * @return une réponse indiquant le succès ou l'échec de la mise à jour.
+     */
     @PUT
     @Path("/{id}")
     @Consumes(MediaType.APPLICATION_JSON)
@@ -99,6 +131,13 @@ public class ProduitResource {
         }
     }
 
+    /**
+     * Met à jour la quantité d'un produit spécifique.
+     *
+     * @param id l'identifiant du produit.
+     * @param quantite la nouvelle quantité sous forme de chaîne.
+     * @return une réponse indiquant le succès ou l'échec de la mise à jour.
+     */
     @PUT
     @Path("/{id}/quantite")
     @Consumes(MediaType.TEXT_PLAIN)
@@ -117,6 +156,12 @@ public class ProduitResource {
         }
     }
 
+    /**
+     * Supprime un produit par son ID.
+     *
+     * @param id l'identifiant du produit à supprimer.
+     * @return une réponse indiquant le succès ou l'échec de la suppression.
+     */
     @DELETE
     @Path("/{id}")
     @Produces(MediaType.APPLICATION_JSON)

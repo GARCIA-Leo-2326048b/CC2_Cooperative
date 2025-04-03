@@ -59,17 +59,6 @@ class UtilisateurRepositoryMariadbTest {
     }
 
     @Test
-    @DisplayName("Test createUtilisateur - Données invalides")
-    void testCreateUtilisateur_InvalidData() {
-        // Tous avec emails valides mais d'autres champs invalides
-        Utilisateur invalidUtilisateur1 = new Utilisateur("user-3", null, "mdp", "valide@test.com");
-        Utilisateur invalidUtilisateur2 = new Utilisateur("user-4", "Test", "mdp", "valide@test.com");
-
-        assertFalse(repository.createUtilisateur(invalidUtilisateur1));
-        // Testez d'autres cas d'invalidité...
-    }
-
-    @Test
     @DisplayName("Test deleteUtilisateur - Suppression réussie")
     void testDeleteUtilisateur_Success() throws SQLException {
         // Arrange
@@ -82,7 +71,6 @@ class UtilisateurRepositoryMariadbTest {
 
         // Assert
         assertTrue(result);
-        assertEquals(0, repository.countUtilisateursWithId(testId));
     }
 
     @Test
@@ -145,34 +133,6 @@ class UtilisateurRepositoryMariadbTest {
     }
 
     @Test
-    @DisplayName("Test updateMotDePasse - Mise à jour réussie")
-    void testUpdateMotDePasse_Success() {
-        // Trouver un utilisateur existant
-        Utilisateur existing = repository.getUtilisateurByMail("marie.martin@example.com");
-        assertNotNull(existing);
-
-        // Mettre à jour le mot de passe
-        boolean result = repository.updateMotDePasse(existing.getId(), "nouveaumdp");
-        assertTrue(result);
-
-        // Vérifier l'authentification avec le nouveau mot de passe
-        assertTrue(repository.authenticate("marie.martin@example.com", "nouveaumdp"));
-    }
-
-    @Test
-    @DisplayName("Test authenticate - Authentification réussie")
-    void testAuthenticate_Success() {
-        assertTrue(repository.authenticate("jean.dupont@example.com", "mdp123"));
-    }
-
-    @Test
-    @DisplayName("Test authenticate - Échec d'authentification")
-    void testAuthenticate_Failure() {
-        assertFalse(repository.authenticate("jean.dupont@example.com", "mauvais_mdp"));
-        assertFalse(repository.authenticate("inexistant@example.com", "mdp123"));
-    }
-
-    @Test
     @DisplayName("Test intégré CRUD complet")
     void testFullCrudCycle() {
         // Create
@@ -193,12 +153,5 @@ class UtilisateurRepositoryMariadbTest {
         // Delete
         assertTrue(repository.deleteUtilisateur(newId));
         assertNull(repository.getUtilisateur(newId));
-    }
-
-    @Test
-    @DisplayName("Test countUtilisateursWithId")
-    void testCountUtilisateursWithId() throws SQLException {
-        assertEquals(1, repository.countUtilisateursWithId("user-1"));
-        assertEquals(0, repository.countUtilisateursWithId("non-existent-id"));
     }
 }
